@@ -13,12 +13,18 @@
     "@graphql-codegen/cli": "2.16.1",
     "@graphql-codegen/client-preset": "1.2.3",
     "@graphql-codegen/import-types-preset": "^2.2.6",
+    "@graphql-codegen/schema-ast": "^3.0.1",
     "@graphql-codegen/typed-document-node": "^2.3.13",
     "@graphql-codegen/typescript-generic-sdk": "^3.1.0",
-    "graphql": "^16.6.0"
-  },
-  "devDependencies": {
+    "@graphql-typed-document-node/core": "^3.2.0",
+    "graphql": "^16.6.0",
+    "graphql-request": "^6.0.0",
+    "graphql-tag": "^2.12.6",
     "node-ts": "^6.0.0",
     "typescript": "^5.0.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.21.4",
+    "@types/node": "^18.16.1"
   }
 }

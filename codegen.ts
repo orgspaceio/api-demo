@@ -12,6 +12,9 @@ const config: CodegenConfig = {
       ],
       documents: "lib/**/*.graphql",
     },
+    "lib/schema.graphql": {
+      plugins: ["schema-ast"],
+    },
   },
   ignoreNoDocuments: true,
   config: {},

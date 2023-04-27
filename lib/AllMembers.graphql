@@ -1,0 +1,21 @@
+query AllMembers {
+  organization {
+    members {
+      edges {
+        node {
+          id
+          name
+          ... on Employee {
+            skills {
+              skill {
+                name
+              }
+              level
+              description
+            }
+          }
+        }
+      }
+    }
+  }
+}

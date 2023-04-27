@@ -1,0 +1,1411 @@
+schema {
+  query: RootQueryType
+}
+
+"""Refers to an individual user account to the Orgspace system"""
+type Account {
+  id: ID!
+  users: [User!]!
+}
+
+"""
+Refers to the design or blueprint of how access control roles are structured and organized within the application's database. 
+"""
+enum AclRole {
+  ADMIN
+  EDITOR
+  FINANCE
+  HR
+  READER
+}
+
+"""Percentage of people under 40 to people over 40"""
+type AgeRatio {
+  overFortyStatus: String
+  ratio: Float
+}
+
+"""
+These are cost rules that specify fixed amounts of cost for a given resource. These are the base from which percentage and perhaps other cost rules in the future will compute costs.
+"""
+type AmountCostRule implements CostRule {
+  _tag: String
+  active: Boolean!
+  cost: Money!
+  createdAt: Long
+  draftId: ID!
+  endingOn: Long
+  id: ID!
+  name: String!
+  ord: Int!
+  per: CostRuleTimeSpanType!
+  scope: CostRuleScope!
+  startingOn: Long
+  updatedAt: Long
+}
+
+"""
+A lens that has been applied to a given org chart in team or people view to highlight data of interest to a user
+"""
+type AppliedLens {
+  color: String!
+  draftId: ID!
+  id: ID!
+  label: String!
+}
+
+enum AssetBalanceSort {
+  ASCENDING
+  DESCENDING
+  NONE
+}
+
+scalar BooleanOrAttributeList
+
+"""An amount of funding for a given team in a given fiscal year"""
+type Budget {
+  active: Boolean!
+  createdAt: Long
+  draftId: ID!
+  endingOn: Long
+  id: ID!
+  limit: Money
+  startingOn: Long
+  updatedAt: Long
+}
+
+"""
+The authorization given to users that enables them to access specific resources
+"""
+type Can {
+  create: PermissionSet!
+  delete: PermissionSet!
+  edit: PermissionSet!
+  read: PermissionSet!
+}
+
+"""
+The authorization given to users that enables them to access specific resources
+"""
+type CanCan {
+  create: BooleanOrAttributeList!
+  delete: BooleanOrAttributeList!
+  read: BooleanOrAttributeList!
+  update: BooleanOrAttributeList!
+}
+
+"""
+The percentage of a given teams cost that can be allocated as a capital expenditure
+"""
+type CapexMix {
+  active: Boolean!
+  createdAt: Long
+  draftId: ID!
+  endingOn: Long!
+  forecastId: String!
+  id: ID!
+  percentCapex: Long!
+  startingOn: Long!
+  updatedAt: Long
+}
+
+type ChangeNarration {
+  kind: ChangeNarrationKind
+  narration: String
+}
+
+enum ChangeNarrationKind {
+  Expansion
+  Layoff
+  RIF
+  Reorg
+  Update
+}
+
+type ChartLegendItem {
+  color: String!
+  draftId: ID!
+  id: ID!
+  name: String!
+}
+
+interface ChartRenderable {
+  draftId: ID!
+  id: ID!
+}
+
+"""
+A contractor in Orgspace represents someone who works on a team for your org, but on a contract basis. usually through some other organization. They tend to have more defined start and end dates, and in Orgspace, can be attached to a Vendor so you can understand who amongst a set of contractors works with one or more given vendors
+"""
+type Contractor implements ChartRenderable & Member {
+  SCHEMA: Float
+  _tag: String
+  assignableTeams: TeamConnection!
+  assignments: TeamAssignmentConnection!
+  billableRate: Float
+  can: CanCan!
+  contractorId: String
+  cost: Cost
+  createdAt: Long
+  dateOfBirth: Long
+  dismissed: Boolean!
+  draftId: ID!
+  endDate: Long
+  ethnicity: String
+  gender: String
+  homeLocationId: String
+  id: ID!
+  jobFamily: JobFamily
+  jobFamilyId: String
+  level: Level
+  manager: Member
+  managerId: ID
+  name: String!
+  office: Office
+  officeId: String
+  possibleManagers: MemberConnection!
+  profilePicture: Image
+  pronouns: String
+  reportCount: Int
+  reports: MemberConnection!
+  roleId: String
+  skills: [Skill!]!
+  startDate: Long
+  status: String
+  teamHistory: TeamTenureConnection!
+  title: Title
+  titleId: String
+  updatedAt: Long
+  vendor: Vendor
+  vendorId: String
+  weeklyHoursTarget: Long!
+  workEmail: String
+  workLocationId: String
+}
+
+type ContractorConnection {
+  edges: [ContractorEdge!]!
+  pageInfo: PageInfo!
+}
+
+type ContractorEdge {
+  cursor: String!
+  node: Contractor!
+}
+
+type Cost {
+  yearly: String!
+}
+
+"""Forward projection of available budget given current costs"""
+type CostBurndown {
+  burndown: MoneyAsOfConnection
+  diffBurndown: MoneyAsOfConnection
+}
+
+interface CostRule {
+  active: Boolean!
+  createdAt: Long
+  draftId: ID!
+  endingOn: Long
+  id: ID!
+  name: String!
+  ord: Int!
+  scope: CostRuleScope!
+  startingOn: Long
+  updatedAt: Long
+}
+
+type CostRuleConnection {
+  edges: [CostRuleEdge!]!
+  pageInfo: PageInfo!
+}
+
+type CostRuleEdge {
+  cursor: String!
+  node: CostRule!
+}
+
+type CostRuleScope {
+  scopeType: ScopeType!
+  subject: String
+  subjectId: String
+}
+
+enum CostRuleTimeSpanType {
+  Day
+  Hour
+  Month
+  Quarter
+  Week
+  Year
+}
+
+"""Costs incurred by the organization over a specific time interval"""
+type CostsOverInterval {
+  cost: Money!
+  interval: Interval!
+}
+
+"""Input for costs over interval query"""
+input CostsOverIntervalInput {
+  diff: Boolean
+  interval: IntervalInput!
+  intervalType: CostRuleTimeSpanType!
+  teamId: ID
+}
+
+type Currency {
+  base: Int!
+  code: String!
+  exponent: Int!
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+"""
+Refers to the characteristics of the employees who work for the company. These characteristics can include age, gender, race, ethnicity, education level, job title, and other factors that can impact the diversity and makeup of the workforce.
+"""
+type Demographics {
+  ethnicityRatio: [EthnicityRatio!]!
+  genderRatios: [GenderRatio!]!
+  overUnderFortyRatio: [AgeRatio!]!
+}
+
+""""""
+type Diff {
+  changes: [String!]!
+  type: DiffType
+}
+
+""""""
+enum DiffType {
+  Deleted
+  Modified
+  New
+}
+
+"""
+Describes a type of entity where a change has been proposed in a scenario
+"""
+type DraftChangeCategory {
+  draftId: ID!
+  entity: EntityType!
+  id: ID!
+  name: String!
+}
+
+"""
+Indicates whether a given user has permission to view (if user is readonly) or edit a given scenario
+"""
+type DraftPermission {
+  createdAt: Long
+  draftId: ID!
+  id: ID!
+  permission: String!
+  updatedAt: Long
+  userId: String!
+}
+
+"""
+Individual who is hired by an organization to perform work or services in exchange for compensation, such as a salary or wages.
+"""
+type Employee implements ChartRenderable & Member {
+  SCHEMA: Float
+  _tag: String
+  assignableTeams: TeamConnection!
+  assignments: TeamAssignmentConnection!
+  can: CanCan!
+  cost: Cost
+  createdAt: Long
+  dateOfBirth: Long
+  dismissed: Boolean!
+  draftId: ID!
+  employeeId: String
+  endDate: Long
+  ethnicity: String
+  gender: String
+  homeLocationId: String
+  id: ID!
+  jobFamily: JobFamily
+  jobFamilyId: String
+  level: Level
+  manager: Member
+  managerId: ID
+  name: String!
+  office: Office
+  officeId: String
+  partTime: Boolean!
+  possibleManagers: MemberConnection!
+  profilePicture: Image
+  pronouns: String
+  ratingId: String
+  reportCount: Int
+  reports: MemberConnection!
+  roleId: String
+  skills: [MemberSkillLevel!]!
+  startDate: Long
+  status: String
+  teamHistory: TeamTenureConnection!
+  title: Title
+  titleId: String
+  updatedAt: Long
+  weeklyHoursTarget: Long!
+  workEmail: String
+  workLocationId: String
+}
+
+type EmployeeConnection {
+  edges: [EmployeeEdge!]!
+  pageInfo: PageInfo!
+}
+
+type EmployeeEdge {
+  cursor: String!
+  node: Employee!
+}
+
+enum EntityType {
+  Assessment
+  ClientEngagement
+  Contractor
+  CostRule
+  Demographic
+  Employee
+  Geo
+  Integration
+  Job
+  JobFamily
+  Office
+  OrgDraft
+  Organization
+  Region
+  Skill
+  Staff
+  Team
+  TeamAssignment
+  TeamRole
+  TeamSection
+  TeamType
+  Title
+  Unknown
+  User
+  Vendor
+}
+
+"""Percentage of people belonging to a named ethnic group"""
+type EthnicityRatio {
+  ethnicity: String
+  ratio: Float
+}
+
+"""Percentage of people who belong to each gender in the system"""
+type GenderRatio {
+  gender: String
+  ratio: Float
+}
+
+"""An image, such as a logo or profile picture, stored in Orgspace"""
+type Image {
+  draftId: ID!
+  filePath: String!
+  height: Long!
+  id: ID!
+  name: String!
+  size: Long!
+  thumbnailUrl: String!
+  url: String!
+  width: Long!
+}
+
+"""A time interval"""
+type Interval {
+  end: DateTime!
+  interval: CostRuleTimeSpanType
+  start: DateTime!
+}
+
+"""A time interval"""
+input IntervalInput {
+  end: DateTime!
+  interval: CostRuleTimeSpanType
+  start: DateTime!
+}
+
+"""An open position that the organization is or was once hiring for."""
+type Job implements ChartRenderable & Member {
+  SCHEMA: Float
+  _tag: String
+  assignableTeams: TeamConnection!
+  assignments: TeamAssignmentConnection!
+  can: CanCan!
+  closedOn: Long
+  cost: Cost
+  createdAt: Long
+  draftId: ID!
+  endDate: Long
+  externalLink: String
+  headcountNumber: String
+  hiredEmployeeId: String
+  id: ID!
+  jobFamily: JobFamily
+  jobFamilyId: String
+  level: Level
+  manager: Member
+  managerId: ID
+  name: String!
+  office: Office
+  officeId: String
+  openedOn: Long
+  partTime: Boolean!
+  possibleManagers: MemberConnection!
+  reportCount: Int
+  reports: MemberConnection!
+  roleId: String
+  startDate: Long
+  state: JobState!
+  status: String
+  teamHistory: TeamTenureConnection!
+  title: Title
+  titleId: String
+  updatedAt: Long
+  weeklyHoursTarget: Long!
+  workLocationId: String
+}
+
+type JobConnection {
+  edges: [JobEdge!]!
+  pageInfo: PageInfo!
+}
+
+type JobEdge {
+  cursor: String!
+  node: Job!
+}
+
+"""
+Job families are groups of related job titles with similar core competencies (eg Engineering, Product, Design).
+"""
+type JobFamily {
+  color: String!
+  createdAt: Long
+  description: String
+  draftId: ID!
+  id: ID!
+  levels: [Level!]!
+  name: String!
+  parentId: String
+  slug: String
+  updatedAt: Long
+}
+
+type JobFamilyConnection {
+  edges: [JobFamilyEdge!]!
+  pageInfo: PageInfo!
+}
+
+type JobFamilyEdge {
+  cursor: String!
+  node: JobFamily!
+}
+
+"""Vacancy status for an open position"""
+enum JobState {
+  Closed
+  Filled
+  Open
+}
+
+"""A record of a financial transaction"""
+type JournalEntry {
+  capex: Boolean
+  category: String
+  cost: Money
+  createdAt: Long
+  draftId: ID!
+  endingOn: Long
+  id: ID!
+  lineItemId: String
+  name: String
+  startingOn: Long
+  transactionDate: Long
+  updatedAt: Long
+}
+
+"""
+Lenses help users filter and sort through org data, making it easier to find what they are looking for.
+"""
+type Lens {
+  createdAt: Long
+  description: String
+  devOnly: Boolean!
+  draftId: ID!
+  id: ID!
+  name: String!
+  updatedAt: Long
+}
+
+"""
+An indicator of level in a career ladder applied to a title in a job family
+"""
+type Level {
+  level: Int!
+  titles: TitleConnection!
+}
+
+"""
+The `BigInt` scalar type represents non-fractional signed whole numeric values.
+"""
+scalar Long
+
+"""
+Refers to an individual who is a part of an organization, or potential member in the case of an open position. Contractors, employees, and open positions are all varieties of a member
+"""
+interface Member implements ChartRenderable {
+  assignableTeams: TeamConnection!
+  assignments: TeamAssignmentConnection!
+  can: CanCan!
+  cost: Cost
+  draftId: ID!
+  id: ID!
+  jobFamily: JobFamily
+  level: Level
+  manager: Member
+  managerId: ID
+  name: String!
+  office: Office
+  possibleManagers: MemberConnection!
+  reportCount: Int
+  reports: MemberConnection!
+  status: String
+  teamHistory: TeamTenureConnection!
+  title: Title
+}
+
+type MemberConnection {
+  edges: [MemberEdge!]!
+  pageInfo: PageInfo!
+}
+
+type MemberEdge {
+  cursor: String!
+  node: Member!
+}
+
+input MemberFilterArgs {
+  assignableToTeam: ID
+  assigned: Boolean
+  ids: [ID!]
+  memberTypes: [MemberType]
+  name: String
+}
+
+"""A skill level for a member"""
+type MemberSkillLevel {
+  description: SkillLevel!
+  level: Int!
+  member: Member!
+  skill: Skill!
+}
+
+type MemberSkillLevelConnection {
+  edges: [MemberSkillLevelEdge!]!
+  pageInfo: PageInfo!
+}
+
+type MemberSkillLevelEdge {
+  cursor: String!
+  node: MemberSkillLevel!
+}
+
+enum MemberType {
+  Contractor
+  Employee
+  Job
+}
+
+type Money {
+  amount: Long!
+  currency: Currency!
+  scale: Long!
+}
+
+"""Represents an amount of money as of a specified date"""
+type MoneyAsOf {
+  asOf: Long!
+  balance: Money!
+  id: String!
+  source: String
+}
+
+type MoneyAsOfConnection {
+  edges: [MoneyAsOfEdge!]!
+  pageInfo: PageInfo!
+}
+
+type MoneyAsOfEdge {
+  cursor: String!
+  node: MoneyAsOf!
+}
+
+"""
+An office is a physical location where one more more employees work. In Orgspace, offices are used to track how distributed a given team is using our Geospread(TM) algorithm, understand who is in a given geographic location, and provide a means for which you can do cost analysis in a manner that considers locality and region.
+"""
+type Office {
+  archived: Boolean
+  can: CanCan!
+  city: String
+  country: String
+  countryCode: String
+  createdAt: Long
+  description: String
+  draftId: ID!
+  externalId: String
+  id: ID!
+  lat: Float!
+  long: Float!
+  name: String!
+  phoneNumber: String
+  postalCode: String
+  stateOrProvince: String
+  street_1: String
+  street_2: String
+  timeZone: String
+  updatedAt: Long
+}
+
+type OfficeConnection {
+  edges: [OfficeEdge!]!
+  pageInfo: PageInfo!
+}
+
+type OfficeEdge {
+  cursor: String!
+  node: Office!
+}
+
+"""
+Steps that a user takes when first signing up and using the application.
+"""
+type Onboarding {
+  completed: Boolean!
+  createdAt: Long
+  draftId: ID!
+  id: ID!
+  updatedAt: Long
+  userId: String!
+}
+
+"""
+Refers to a graphical representation of the structure of an organization, including its various departments, positions, and reporting relationships. 
+"""
+type OrgChart {
+  availableLenses: [Lens!]!
+  data: OrgChartConnection!
+  defaultNodeId: ID!
+  draftId: ID!
+  filter: OrgChartFilter
+  id: ID!
+  legend: OrgChartLegend!
+  lens: ID!
+  mostRelevantPerson: Member
+  mostRelevantTeam: Team
+  view: OrgChartView
+}
+
+type OrgChartConnection {
+  edges: [OrgChartEdge!]!
+  pageInfo: PageInfo!
+}
+
+type OrgChartEdge {
+  cursor: String!
+  hasChildren: Boolean!
+  lens: AppliedLens
+  node: ChartRenderable!
+}
+
+enum OrgChartFilter {
+  ALL
+  USER
+}
+
+type OrgChartLegend {
+  draftId: ID!
+  entries: [ChartLegendItem!]!
+  id: ID!
+  title: String!
+}
+
+enum OrgChartView {
+  PEOPLE
+  TEAMS
+}
+
+"""Drafts are sets of potential changes that take effect when adopted."""
+type OrgStructureDraft {
+  """Indicates whether a given user is allowed to adopt a given scenario"""
+  canAdopt: Boolean!
+
+  """Indicates whether a given user is allowed to view a given scenario"""
+  canReview: Boolean!
+  changeNarration(action: ChangeNarrationKind, additionalContext: String, chatGPT: Boolean, companyName: String, includeDismissed: Boolean, mood: String): ChangeNarration
+  changes: [DraftChangeCategory!]!
+  createdAt: Long
+  draftId: ID!
+  id: ID!
+  name: String!
+  ownerId: String
+  permissions: [DraftPermission!]!
+  updatedAt: Long
+}
+
+type OrgStructureDraftConnection {
+  edges: [OrgStructureDraftEdge!]!
+  pageInfo: PageInfo!
+}
+
+type OrgStructureDraftEdge {
+  cursor: String!
+  node: OrgStructureDraft!
+}
+
+"""
+Group of individuals who work together to achieve a common goal or set of goals.
+"""
+type Organization {
+  SCHEMA: Float
+  activeDraftId: String
+  assetBalances(sort: AssetBalanceSort): MoneyAsOfConnection!
+  can: CanCan!
+  contractors: ContractorConnection!
+  costBurndown(diff: Boolean, teamId: ID): CostBurndown
+  costRule(id: ID!): CostRule
+  costRules: CostRuleConnection!
+
+  """Costs incurred by the organization over a specific time interval"""
+  costsOverInterval(input: CostsOverIntervalInput!): [CostsOverInterval!]!
+  createdAt: Long
+  currentDraft: OrgStructureDraft
+  demographics(diff: Boolean, teamId: ID): Demographics
+  draftId: ID!
+  drafts: OrgStructureDraftConnection!
+  employeeLoadedCostFactor: Long
+  employees: EmployeeConnection!
+  fiscalYearStartDay: Long!
+  fiscalYearStartMonth: Long!
+  history: OrganizationVersionConnection
+  id: ID!
+  integrationsEnabled: Boolean
+  isCurrentVersion: Boolean!
+  isDraft: Boolean
+  jobFamilies: JobFamilyConnection!
+  jobFamily(id: ID!): JobFamily
+  jobs: JobConnection!
+  lastAppliedEventId: String
+  logo: Image
+  managers: MemberConnection!
+  member(id: ID!): Member
+  members(after: String, filter: MemberFilterArgs, first: Int): MemberConnection!
+  mostRecentAssetBalance: MoneyAsOf
+  name: String!
+  office(id: ID!): Office
+  offices: OfficeConnection!
+  onboardable: Boolean!
+  onboarding: Onboarding
+  orgChart(filter: OrgChartFilter, lens: ID, view: OrgChartView): OrgChart!
+  plan: OrgspacePlan
+  region(id: ID!): Region
+  regions: RegionConnection!
+  rootManager: Member
+  rootTeam: Team
+  search(query: String): [SearchResult!]!
+  skill(id: ID!): Skill
+  skills: SkillConnection!
+  slug: String!
+  stats: OrganizationStats
+  team(id: ID!): Team
+  teamAssignment(id: ID!): TeamAssignment
+  teamAssignments(after: String, filter: TeamAssignmentFilter, first: Int): TeamAssignmentConnection!
+  teamRole(id: ID!): TeamRole
+  teamRoles: TeamRoleConnection!
+  teamType(id: ID!): TeamType
+  teamTypes: TeamTypeConnection!
+  teams(filter: TeamFilterArgs): TeamConnection!
+  title(id: ID!): Title
+  titles: TitleConnection!
+  updatedAt: Long
+  userMember: Member
+  userTeams: [Team!]!
+  vendor(id: ID!): Vendor
+  vendors: VendorConnection!
+  version: Long!
+}
+
+type OrganizationStats {
+  contractors: Int!
+  draftId: ID!
+  employees: Int!
+  id: ID!
+  jobFamilies: Int!
+  jobs: Int!
+  teamAssignments: Int!
+  teamRoles: Int!
+  teams: Int!
+  titles: Int!
+  users: Int!
+  vendors: Int!
+  version: Int!
+}
+
+"""
+Version of the organization's strategy or plan: An organization may have a strategic plan or business plan that outlines its goals
+"""
+type OrganizationVersion {
+  headcount: Int!
+  id: ID!
+  timestamp: Long!
+  version: Int!
+}
+
+type OrganizationVersionConnection {
+  edges: [OrganizationVersionEdge!]!
+  pageInfo: PageInfo!
+}
+
+type OrganizationVersionEdge {
+  cursor: String!
+  node: OrganizationVersion!
+}
+
+"""
+Refers to the pricing structure and options that are available for users of a web application to access its features and services.
+"""
+type OrgspacePlan {
+  cancelAtPeriodEnd: Boolean!
+  createdAt: Long
+  currentPeriodEnd: Float!
+  currentPeriodStart: Float!
+  customerId: String
+  default_payment_method: String
+  id: String!
+  name: String!
+  priceId: String
+  productId: String
+  status: OrgspacePlanStatus
+  trialEndDate: Float
+  trialStartDate: Float
+  updatedAt: Long
+}
+
+"""
+Refers to the current status of a user's payment plan, which determines their access to the app's features and functionality.
+"""
+enum OrgspacePlanStatus {
+  active
+  canceled
+  incomplete
+  incomplete_expired
+  past_due
+  trialing
+  unpaid
+}
+
+"""
+Refers to the design or blueprint of how page information is structured and organized within the application's database. 
+"""
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean
+  hasPreviousPage: Boolean
+  startCursor: String
+}
+
+"""
+Percentage cost rules are used for cases like "adjust for expected compensation increases", "plan for contractor rate changes", or similar types of future changes.
+"""
+type PercentageCostRule implements CostRule {
+  _tag: String
+  active: Boolean!
+  createdAt: Long
+  draftId: ID!
+  endingOn: Long
+  id: ID!
+  name: String!
+  ord: Int!
+  percentChange: Int!
+  scope: CostRuleScope!
+  startingOn: Long
+  updatedAt: Long
+}
+
+"""
+Refers to the design or blueprint of how permission sets are structured and organized within the application's database.
+"""
+type PermissionSet {
+  Assessment: Boolean!
+  ClientEngagement: Boolean!
+  Contractor: Boolean!
+  CostRule: Boolean!
+  Demographic: Boolean!
+  Employee: Boolean!
+  Geo: Boolean!
+  Integration: Boolean!
+  Job: Boolean!
+  JobFamily: Boolean!
+  Office: Boolean!
+  OrgDraft: Boolean!
+  Organization: Boolean!
+  Region: Boolean!
+  Skill: Boolean!
+  Staff: Boolean!
+  Team: Boolean!
+  TeamAssignment: Boolean!
+  TeamRole: Boolean!
+  TeamSection: Boolean!
+  TeamType: Boolean!
+  Title: Boolean!
+  Unknown: Boolean!
+  User: Boolean!
+  Vendor: Boolean!
+}
+
+"""Regions describe geographic partitions of the company."""
+type Region {
+  archived: Boolean!
+  assignableOffices: OfficeConnection!
+  can: CanCan!
+  createdAt: Long
+  description: String
+  draftId: ID!
+  id: ID!
+  name: String!
+  offices: OfficeConnection!
+  updatedAt: Long
+}
+
+type RegionConnection {
+  edges: [RegionEdge!]!
+  pageInfo: PageInfo!
+}
+
+type RegionEdge {
+  cursor: String!
+  node: Region!
+}
+
+type RootQueryType {
+  account: Account!
+  organization(draftId: ID, view: OrgChartView): Organization!
+}
+
+enum ScopeType {
+  Global
+  JobFamily
+  Member
+  TeamRole
+  Title
+}
+
+"""Search Document"""
+type SearchDocument {
+  as: String
+  draftId: ID!
+  entity: String!
+  href: String!
+  id: ID!
+  name: String!
+}
+
+"""Search Result"""
+type SearchResult {
+  item: SearchDocument!
+  refIndex: Int!
+  score: Float
+}
+
+"""
+Abilities and knowledge that employees bring to the table to help the organization achieve its goals.
+"""
+type Skill {
+  can: CanCan!
+  children: SkillConnection!
+  createdAt: Long
+  description: String
+  draftId: ID!
+  id: ID!
+  members: MemberSkillLevelConnection
+  name: String!
+  parents: [Skill!]!
+  stub: Boolean!
+  updatedAt: Long
+}
+
+type SkillConnection {
+  edges: [SkillEdge!]!
+  pageInfo: PageInfo!
+}
+
+"""
+A property of a team that indicates that a particular skill is desired for proper staffing, at a particular quantity
+"""
+type SkillDesire {
+  desired: Int!
+  draftId: ID!
+  id: ID!
+  present: Int!
+  skill: Skill!
+  team: Team!
+}
+
+type SkillDesireConnection {
+  edges: [SkillDesireEdge!]!
+  pageInfo: PageInfo!
+}
+
+type SkillDesireEdge {
+  cursor: String!
+  node: SkillDesire!
+}
+
+type SkillEdge {
+  cursor: String!
+  node: Skill!
+}
+
+enum SkillLevel {
+  Advanced
+  Aspiring
+  Beginner
+  Expert
+  Proficient
+}
+
+"""A team is a group of people working together on a shared problem."""
+type Team implements ChartRenderable {
+  allParents: [Team!]!
+  amountRemaining: Money!
+  archived: Boolean!
+  assignments: TeamAssignmentConnection!
+  averageTenure: Float!
+  budget: Budget
+  can: CanCan!
+  children: [Team!]!
+  costBurndown(diff: Boolean): CostBurndown
+  createdAt: Long
+  currentBudget: [Budget!]!
+
+  """
+  The current capex forecast. If no current one is found, the most recent one will be returned. Use asOf timestamp to set the time span - will return the most recent forecast starting before that date
+  """
+  currentCapexForecast: CapexMix
+  demographics: TeamDemographics
+  diff: Diff
+  draftId: ID!
+  hasSufficientBudget: Boolean!
+  id: ID!
+  memberCount: Int!
+  members: MemberConnection
+  name: String!
+  offices: [Office!]!
+  openPositions: Int!
+  ord: Long
+  organizationId: String
+  parent: Team
+  parentId: String
+  possibleParents: [Team!]!
+
+  """
+  The prior capex forecast. If no current one is found, the most recent one will be returned. Use asOf timestamp to set the time span - will return the most recent forecast ending before that date
+  """
+  priorCapexForecast: CapexMix
+  purpose: String
+  realizedCosts: [JournalEntry!]!
+  sections: [TeamSection!]!
+  skills: SkillDesireConnection
+  teamBudgetDifference: Money!
+  teamDispersedness: Float
+  teamType: TeamType
+  teamTypeId: String
+  unstaffedCount: Int!
+  updatedAt: Long
+  warnings: [TeamWarning!]!
+}
+
+"""Percentage of people under 40 to people over 40 within a given team"""
+type TeamAgeRatio {
+  overFortyStatus: String
+  ratio: Float
+}
+
+"""
+Refers to the process of assigning individuals to a particular team or group for a specific task or project
+"""
+type TeamAssignment {
+  allocation: Long!
+  archived: Boolean!
+  assigneeId: String
+  assignmentType: TeamAssignmentType!
+  can: CanCan!
+  createdAt: Long
+  diff: DiffType
+  draftId: ID!
+  endDate: Long
+  id: ID!
+  label: String
+  member: Member
+  office: Office
+  ord: Long!
+  region: Region
+  role: TeamRole
+  startDate: Long
+  team: Team
+  teamId: String!
+  teamRole: String
+  teamSectionId: ID!
+  updatedAt: Long
+}
+
+type TeamAssignmentConnection {
+  edges: [TeamAssignmentEdge!]!
+  pageInfo: PageInfo!
+}
+
+type TeamAssignmentEdge {
+  cursor: String!
+  node: TeamAssignment!
+}
+
+input TeamAssignmentFilter {
+  assignmentType: String
+  jobFamilies: [ID!]
+  memberName: String
+  memberTypes: [MemberType]
+  members: [ID!]
+  offices: [ID!]
+  regions: [ID!]
+  skills: [ID!]
+  teamTypes: [ID!]
+  teams: [ID!]
+  titles: [ID!]
+}
+
+"""
+Team assignment types refer to the different ways in which teams can be structured within an organization.
+"""
+enum TeamAssignmentType {
+  Assignment
+  Leadership
+  Membership
+  Unstaffed
+}
+
+type TeamConnection {
+  edges: [TeamEdge!]!
+  pageInfo: PageInfo!
+}
+
+"""
+Refers to the characteristics of the employees who work for the team. These characteristics can include age, gender, race, ethnicity, education level, job title, and other factors that can impact the diversity and makeup of the workforce.
+"""
+type TeamDemographics {
+  ethnicityRatio: [TeamEthnicityRatio!]!
+  genderRatios: [TeamGenderRatio!]!
+  overUnderFortyRatio: [TeamAgeRatio!]!
+}
+
+type TeamEdge {
+  cursor: String!
+  node: Team!
+}
+
+"""
+Percentage of people belonging to a named ethnic group within a given team
+"""
+type TeamEthnicityRatio {
+  ethnicity: String
+  ratio: Float
+}
+
+input TeamFilterArgs {
+  ids: [ID!]
+  includeInactive: Boolean
+  name: String
+  teamTypes: [ID!]
+}
+
+"""
+Percentage of people who belong to each gender in the system within a specific team
+"""
+type TeamGenderRatio {
+  gender: String
+  ratio: Float
+}
+
+"""
+Roles describe a person's responsibilities on a team (eg Frontend, Devops, Quality, UX, Product).
+"""
+type TeamRole {
+  _tag: String
+  can: CanCan!
+  createdAt: Long
+  description: String
+  draftId: ID!
+  id: ID!
+  name: String!
+  updatedAt: Long
+}
+
+type TeamRoleConnection {
+  edges: [TeamRoleEdge!]!
+  pageInfo: PageInfo!
+}
+
+type TeamRoleEdge {
+  cursor: String!
+  node: TeamRole!
+}
+
+"""
+A team section is where assignments are placed in teams. Typically leadership and/or membership
+"""
+type TeamSection {
+  assignmentType: TeamAssignmentType!
+  assignments: [TeamAssignment!]!
+  draftId: ID!
+  id: ID!
+  name: String!
+  teamId: ID!
+}
+
+"""
+Refers to the length of time that a team has been together, or the duration of their collaboration on a specific project or task.
+"""
+type TeamTenure {
+  allocation: Long!
+  assignment: TeamAssignment
+  assignmentId: String!
+  draftId: ID!
+  endDate: Long
+  id: ID!
+  member: Member
+  memberId: String!
+  role: TeamRole
+  roleId: String
+  roleName: String
+  startDate: Long!
+  team: Team
+  teamId: String!
+  teamName: String!
+  teamSection: TeamAssignmentType!
+}
+
+type TeamTenureConnection {
+  edges: [TeamTenureEdge!]!
+  pageInfo: PageInfo!
+}
+
+type TeamTenureEdge {
+  cursor: String!
+  node: TeamTenure!
+}
+
+"""Team types describe different styles and responsibilities of teams"""
+type TeamType {
+  billable: Boolean
+  can: CanCan!
+  color: String
+  createdAt: Long
+  description: String
+  draftId: ID!
+  id: ID!
+  name: String!
+  updatedAt: Long
+}
+
+type TeamTypeConnection {
+  edges: [TeamTypeEdge!]!
+  pageInfo: PageInfo!
+}
+
+type TeamTypeEdge {
+  cursor: String!
+  node: TeamType!
+}
+
+enum TeamWarning {
+  Underskilled
+  Understaffed
+}
+
+"""
+Job titles describe a person's position and seniority (eg Junior Engineer, VP of Product).
+"""
+type Title {
+  SCHEMA: Float
+  can: CanCan!
+  createdAt: Long
+  description: String
+  draftId: ID!
+  id: ID!
+  jobFamily: JobFamily
+  jobFamilyId: String
+  level: Long!
+  name: String!
+  roleId: String
+  updatedAt: Long
+}
+
+type TitleConnection {
+  edges: [TitleEdge!]!
+  pageInfo: PageInfo!
+}
+
+type TitleEdge {
+  cursor: String!
+  node: Title!
+}
+
+"""
+Refers to the design or blueprint of how Orgspace user data is organized and structured within the application's database.
+"""
+type User {
+  access_token: ID
+  can: Can!
+  email: String
+  id: ID!
+  name: String
+  role: AclRole
+}
+
+"""
+Refers to a person, company, or organization that provides goods or services to the organization in exchange for payment.
+"""
+type Vendor {
+  can: CanCan!
+  contractors: ContractorConnection!
+  createdAt: Long
+  description: String
+  draftId: ID!
+  id: ID!
+  logo: Image
+  name: String!
+  pointOfContact: Contractor
+  pointOfContactId: String
+  pointOfContactName: String
+  staffCount: Int
+  updatedAt: Long
+}
+
+type VendorConnection {
+  edges: [VendorEdge!]!
+  pageInfo: PageInfo!
+}
+
+type VendorEdge {
+  cursor: String!
+  node: Vendor!
+}

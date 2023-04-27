@@ -3,6 +3,8 @@
 .direnv/
 shell.nix
 node_modules/
+.idea/
+bun.lockb
 
 # Codegened types
 lib/types.ts
