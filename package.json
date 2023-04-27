@@ -4,9 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "graphql-codegen --watch"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "author": "brian@orgspace.io",
+  "dependencies": {
+    "@graphql-codegen/cli": "2.16.1",
+    "@graphql-codegen/client-preset": "1.2.3",
+    "@graphql-codegen/import-types-preset": "^2.2.6",
+    "@graphql-codegen/typed-document-node": "^2.3.13",
+    "@graphql-codegen/typescript-generic-sdk": "^3.1.0",
+    "graphql": "^16.6.0"
+  },
+  "devDependencies": {
+    "node-ts": "^6.0.0",
+    "typescript": "^5.0.4"
+  }
 }
