@@ -605,8 +605,8 @@ input MemberFilterArgs {
 
 """A skill level for a member"""
 type MemberSkillLevel {
-  description: SkillLevel!
   level: Int!
+  levelName: SkillLevel!
   member: Member!
   skill: Skill!
 }
