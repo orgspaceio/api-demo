@@ -5,6 +5,7 @@ shell.nix
 node_modules/
 .idea/
 bun.lockb
+.env
 
 # Codegened types
 lib/types.ts
