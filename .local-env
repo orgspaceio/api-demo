@@ -1,0 +1,2 @@
+export GOROOT="/nix/store/84fhzs9abhyaa8pzhc1vg4j3w2mf5bn2-go-1.19.2/share/go"
+#export GOPATH="$PWD/go"
