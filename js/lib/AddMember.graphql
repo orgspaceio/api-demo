@@ -1,0 +1,5 @@
+mutation AddMember($input: CreateMemberInput) {
+    createMember(input: $input) {
+        
+    }
+}

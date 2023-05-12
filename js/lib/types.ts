@@ -33,29 +33,18 @@ export enum AclRole {
   Reader = 'READER'
 }
 
+export type AddSkillToMemberInput = {
+  draftId?: InputMaybe<Scalars['ID']>;
+  memberId: Scalars['String'];
+  skillId?: InputMaybe<Scalars['String']>;
+  skillName?: InputMaybe<Scalars['String']>;
+};
+
 /** Percentage of people under 40 to people over 40 */
 export type AgeRatio = {
   __typename?: 'AgeRatio';
   overFortyStatus?: Maybe<Scalars['String']>;
   ratio?: Maybe<Scalars['Float']>;
-};
-
-/** These are cost rules that specify fixed amounts of cost for a given resource. These are the base from which percentage and perhaps other cost rules in the future will compute costs. */
-export type AmountCostRule = CostRule & {
-  __typename?: 'AmountCostRule';
-  _tag?: Maybe<Scalars['String']>;
-  active: Scalars['Boolean'];
-  cost: Money;
-  createdAt?: Maybe<Scalars['Long']>;
-  draftId: Scalars['ID'];
-  endingOn?: Maybe<Scalars['Long']>;
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  ord: Scalars['Int'];
-  per: CostRuleTimeSpanType;
-  scope: CostRuleScope;
-  startingOn?: Maybe<Scalars['Long']>;
-  updatedAt?: Maybe<Scalars['Long']>;
 };
 
 /** A lens that has been applied to a given org chart in team or people view to highlight data of interest to a user */
@@ -145,6 +134,69 @@ export type ChartRenderable = {
   id: Scalars['ID'];
 };
 
+/** A client is a company or organization that your company does business with */
+export type Client = {
+  __typename?: 'Client';
+  createdAt?: Maybe<Scalars['Long']>;
+  description?: Maybe<Scalars['String']>;
+  draftId: Scalars['ID'];
+  endDate?: Maybe<Scalars['Long']>;
+  engagements: ClientEngagementConnection;
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  region?: Maybe<Region>;
+  regionId?: Maybe<Scalars['String']>;
+  startDate?: Maybe<Scalars['Long']>;
+  updatedAt?: Maybe<Scalars['Long']>;
+};
+
+export type ClientConnection = {
+  __typename?: 'ClientConnection';
+  edges: Array<ClientEdge>;
+  pageInfo: PageInfo;
+};
+
+export type ClientEdge = {
+  __typename?: 'ClientEdge';
+  cursor: Scalars['String'];
+  node: Client;
+};
+
+/** Client engagements are time-bounded relationships with clients with one or more teams working on them. */
+export type ClientEngagement = {
+  __typename?: 'ClientEngagement';
+  client?: Maybe<Client>;
+  clientId?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['Long']>;
+  description?: Maybe<Scalars['String']>;
+  draftId: Scalars['ID'];
+  endDate?: Maybe<Scalars['Long']>;
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  officeId?: Maybe<Scalars['String']>;
+  probabilityToClose?: Maybe<Scalars['Long']>;
+  reason?: Maybe<Scalars['String']>;
+  startDate?: Maybe<Scalars['Long']>;
+  teams: TeamConnection;
+  updatedAt?: Maybe<Scalars['Long']>;
+};
+
+export type ClientEngagementConnection = {
+  __typename?: 'ClientEngagementConnection';
+  edges: Array<ClientEngagementEdge>;
+  pageInfo: PageInfo;
+};
+
+export type ClientEngagementEdge = {
+  __typename?: 'ClientEngagementEdge';
+  cursor: Scalars['String'];
+  node: ClientEngagement;
+};
+
+export type ClientEngagementFilterArgs = {
+  clientId?: InputMaybe<Scalars['ID']>;
+};
+
 /** A contractor in Orgspace represents someone who works on a team for your org, but on a contract basis. usually through some other organization. They tend to have more defined start and end dates, and in Orgspace, can be attached to a Vendor so you can understand who amongst a set of contractors works with one or more given vendors */
 export type Contractor = ChartRenderable & Member & {
   __typename?: 'Contractor';
@@ -179,7 +231,7 @@ export type Contractor = ChartRenderable & Member & {
   reportCount?: Maybe<Scalars['Int']>;
   reports: MemberConnection;
   roleId?: Maybe<Scalars['String']>;
-  skills: Array<Skill>;
+  skills: Array<MemberSkillLevel>;
   startDate?: Maybe<Scalars['Long']>;
   status?: Maybe<Scalars['String']>;
   teamHistory: TeamTenureConnection;
@@ -273,11 +325,50 @@ export type CostsOverIntervalInput = {
   teamId?: InputMaybe<Scalars['ID']>;
 };
 
+export type CreateMemberInput = {
+  assignments: Array<TeamAssignmentInputType>;
+  dateOfBirth?: InputMaybe<Scalars['Long']>;
+  draftId?: InputMaybe<Scalars['ID']>;
+  endDate?: InputMaybe<Scalars['Long']>;
+  headcountNumber?: InputMaybe<Scalars['String']>;
+  hiringManagerId?: InputMaybe<Scalars['String']>;
+  jobFamilyId?: InputMaybe<Scalars['String']>;
+  managerId?: InputMaybe<Scalars['String']>;
+  memberId?: InputMaybe<Scalars['String']>;
+  memberType?: InputMaybe<MemberTypeEnum>;
+  name: Scalars['String'];
+  openedOn?: InputMaybe<Scalars['Long']>;
+  partTime?: InputMaybe<Scalars['Boolean']>;
+  profilePicture?: InputMaybe<ImageInput>;
+  pronouns?: InputMaybe<Scalars['String']>;
+  skills: Array<Scalars['ID']>;
+  startDate?: InputMaybe<Scalars['Long']>;
+  titleId?: InputMaybe<Scalars['String']>;
+  workEmail?: InputMaybe<Scalars['String']>;
+};
+
+export type CreateSkillInput = {
+  description?: InputMaybe<Scalars['String']>;
+  draftId?: InputMaybe<Scalars['ID']>;
+  id: Scalars['String'];
+  name: Scalars['String'];
+};
+
 export type Currency = {
   __typename?: 'Currency';
   base: Scalars['Int'];
   code: Scalars['String'];
   exponent: Scalars['Int'];
+};
+
+export type DeleteMemberInput = {
+  draftId?: InputMaybe<Scalars['ID']>;
+  id: Scalars['ID'];
+};
+
+export type DeleteSkillInput = {
+  draftId?: InputMaybe<Scalars['ID']>;
+  id: Scalars['String'];
 };
 
 /** Refers to the characteristics of the employees who work for the company. These characteristics can include age, gender, race, ethnicity, education level, job title, and other factors that can impact the diversity and makeup of the workforce. */
@@ -381,6 +472,7 @@ export type EmployeeEdge = {
 
 export enum EntityType {
   Assessment = 'Assessment',
+  Client = 'Client',
   ClientEngagement = 'ClientEngagement',
   Contractor = 'Contractor',
   CostRule = 'CostRule',
@@ -414,6 +506,30 @@ export type EthnicityRatio = {
   ratio?: Maybe<Scalars['Float']>;
 };
 
+export type FallibleBoolean = {
+  __typename?: 'FallibleBoolean';
+  errors: Array<MutationError>;
+  result?: Maybe<Scalars['Boolean']>;
+};
+
+export type FallibleId = {
+  __typename?: 'FallibleID';
+  errors: Array<MutationError>;
+  result?: Maybe<Scalars['ID']>;
+};
+
+export type FallibleMember = {
+  __typename?: 'FallibleMember';
+  errors: Array<MutationError>;
+  result?: Maybe<Member>;
+};
+
+export type FallibleSkill = {
+  __typename?: 'FallibleSkill';
+  errors: Array<MutationError>;
+  result?: Maybe<Skill>;
+};
+
 /** Percentage of people who belong to each gender in the system */
 export type GenderRatio = {
   __typename?: 'GenderRatio';
@@ -428,6 +544,17 @@ export type Image = {
   filePath: Scalars['String'];
   height: Scalars['Long'];
   id: Scalars['ID'];
+  name: Scalars['String'];
+  size: Scalars['Long'];
+  thumbnailUrl: Scalars['String'];
+  url: Scalars['String'];
+  width: Scalars['Long'];
+};
+
+export type ImageInput = {
+  filePath: Scalars['String'];
+  height: Scalars['Long'];
+  id?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
   size: Scalars['Long'];
   thumbnailUrl: Scalars['String'];
@@ -643,6 +770,12 @@ export enum MemberType {
   Job = 'Job'
 }
 
+export enum MemberTypeEnum {
+  Contractor = 'Contractor',
+  Employee = 'Employee',
+  Job = 'Job'
+}
+
 export type Money = {
   __typename?: 'Money';
   amount: Scalars['Long'];
@@ -671,6 +804,21 @@ export type MoneyAsOfEdge = {
   node: MoneyAsOf;
 };
 
+export type MutationError = {
+  __typename?: 'MutationError';
+  errorCode?: Maybe<MutationErrorTypeEnum>;
+  field?: Maybe<Scalars['String']>;
+  message?: Maybe<Scalars['String']>;
+};
+
+export enum MutationErrorTypeEnum {
+  AuthenticationError = 'AuthenticationError',
+  ForbiddenError = 'ForbiddenError',
+  SyntaxError = 'SyntaxError',
+  UserInputError = 'UserInputError',
+  ValidationError = 'ValidationError'
+}
+
 /** An office is a physical location where one more more employees work. In Orgspace, offices are used to track how distributed a given team is using our Geospread(TM) algorithm, understand who is in a given geographic location, and provide a means for which you can do cost analysis in a manner that considers locality and region. */
 export type Office = {
   __typename?: 'Office';
@@ -692,6 +840,7 @@ export type Office = {
   stateOrProvince?: Maybe<Scalars['String']>;
   street_1?: Maybe<Scalars['String']>;
   street_2?: Maybe<Scalars['String']>;
+  teams?: Maybe<TeamConnection>;
   timeZone?: Maybe<Scalars['String']>;
   updatedAt?: Maybe<Scalars['Long']>;
 };
@@ -815,6 +964,10 @@ export type Organization = {
   activeDraftId?: Maybe<Scalars['String']>;
   assetBalances: MoneyAsOfConnection;
   can: CanCan;
+  client?: Maybe<Client>;
+  clientEngagement?: Maybe<ClientEngagement>;
+  clientEngagements: ClientEngagementConnection;
+  clients: ClientConnection;
   contractors: ContractorConnection;
   costBurndown?: Maybe<CostBurndown>;
   costRule?: Maybe<CostRule>;
@@ -882,6 +1035,26 @@ export type Organization = {
 /** Group of individuals who work together to achieve a common goal or set of goals. */
 export type OrganizationAssetBalancesArgs = {
   sort?: InputMaybe<AssetBalanceSort>;
+};
+
+
+/** Group of individuals who work together to achieve a common goal or set of goals. */
+export type OrganizationClientArgs = {
+  id: Scalars['ID'];
+};
+
+
+/** Group of individuals who work together to achieve a common goal or set of goals. */
+export type OrganizationClientEngagementArgs = {
+  id: Scalars['ID'];
+};
+
+
+/** Group of individuals who work together to achieve a common goal or set of goals. */
+export type OrganizationClientEngagementsArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  filter?: InputMaybe<ClientEngagementFilterArgs>;
+  first?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -1089,27 +1262,11 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars['String']>;
 };
 
-/** Percentage cost rules are used for cases like "adjust for expected compensation increases", "plan for contractor rate changes", or similar types of future changes. */
-export type PercentageCostRule = CostRule & {
-  __typename?: 'PercentageCostRule';
-  _tag?: Maybe<Scalars['String']>;
-  active: Scalars['Boolean'];
-  createdAt?: Maybe<Scalars['Long']>;
-  draftId: Scalars['ID'];
-  endingOn?: Maybe<Scalars['Long']>;
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  ord: Scalars['Int'];
-  percentChange: Scalars['Int'];
-  scope: CostRuleScope;
-  startingOn?: Maybe<Scalars['Long']>;
-  updatedAt?: Maybe<Scalars['Long']>;
-};
-
 /** Refers to the design or blueprint of how permission sets are structured and organized within the application's database. */
 export type PermissionSet = {
   __typename?: 'PermissionSet';
   Assessment: Scalars['Boolean'];
+  Client: Scalars['Boolean'];
   ClientEngagement: Scalars['Boolean'];
   Contractor: Scalars['Boolean'];
   CostRule: Scalars['Boolean'];
@@ -1161,6 +1318,52 @@ export type RegionEdge = {
   __typename?: 'RegionEdge';
   cursor: Scalars['String'];
   node: Region;
+};
+
+export type RemoveSkillFromMemberInput = {
+  draftId?: InputMaybe<Scalars['ID']>;
+  memberId: Scalars['String'];
+  skillId?: InputMaybe<Scalars['String']>;
+};
+
+export type RootMutationType = {
+  __typename?: 'RootMutationType';
+  addSkillToMember?: Maybe<FallibleMember>;
+  createMember?: Maybe<FallibleMember>;
+  createSkill?: Maybe<FallibleSkill>;
+  deleteMember?: Maybe<FallibleBoolean>;
+  deleteSkill?: Maybe<FallibleId>;
+  removeSkillFromMember?: Maybe<FallibleMember>;
+};
+
+
+export type RootMutationTypeAddSkillToMemberArgs = {
+  input: AddSkillToMemberInput;
+};
+
+
+export type RootMutationTypeCreateMemberArgs = {
+  input: CreateMemberInput;
+};
+
+
+export type RootMutationTypeCreateSkillArgs = {
+  input: CreateSkillInput;
+};
+
+
+export type RootMutationTypeDeleteMemberArgs = {
+  input: DeleteMemberInput;
+};
+
+
+export type RootMutationTypeDeleteSkillArgs = {
+  input: DeleteSkillInput;
+};
+
+
+export type RootMutationTypeRemoveSkillFromMemberArgs = {
+  input: RemoveSkillFromMemberInput;
 };
 
 export type RootQueryType = {
@@ -1272,6 +1475,7 @@ export type Team = ChartRenderable & {
   budget?: Maybe<Budget>;
   can: CanCan;
   children: Array<Team>;
+  clientEngagementId?: Maybe<Scalars['String']>;
   costBurndown?: Maybe<CostBurndown>;
   createdAt?: Maybe<Scalars['Long']>;
   currentBudget: Array<Budget>;
@@ -1371,6 +1575,21 @@ export type TeamAssignmentFilter = {
   teamTypes?: InputMaybe<Array<Scalars['ID']>>;
   teams?: InputMaybe<Array<Scalars['ID']>>;
   titles?: InputMaybe<Array<Scalars['ID']>>;
+};
+
+/** Input value of a team assignment, used for creating new assignments */
+export type TeamAssignmentInputType = {
+  allocation: Scalars['Long'];
+  archived?: InputMaybe<Scalars['Boolean']>;
+  assigneeId?: InputMaybe<Scalars['String']>;
+  assignmentType: TeamAssignmentType;
+  createdAt?: InputMaybe<Scalars['Long']>;
+  endDate?: InputMaybe<Scalars['Long']>;
+  ord?: InputMaybe<Scalars['Long']>;
+  startDate?: InputMaybe<Scalars['Long']>;
+  teamId: Scalars['String'];
+  teamRole?: InputMaybe<Scalars['String']>;
+  updatedAt?: InputMaybe<Scalars['Long']>;
 };
 
 /** Team assignment types refer to the different ways in which teams can be structured within an organization. */
@@ -1592,41 +1811,11 @@ export type VendorEdge = {
   node: Vendor;
 };
 
-export type AllMembersQueryVariables = Exact<{ [key: string]: never; }>;
 
-
-export type AllMembersQuery = { __typename?: 'RootQueryType', organization: { __typename?: 'Organization', members: { __typename?: 'MemberConnection', edges: Array<{ __typename?: 'MemberEdge', node: { __typename?: 'Contractor', id: string, name: string } | { __typename?: 'Employee', id: string, name: string, skills: Array<{ __typename?: 'MemberSkillLevel', level: number, levelName: SkillLevel, skill: { __typename?: 'Skill', name: string } }> } | { __typename?: 'Job', id: string, name: string } }> } } };
-
-
-export const AllMembersDocument = gql`
-    query AllMembers {
-  organization {
-    members {
-      edges {
-        node {
-          id
-          name
-          ... on Employee {
-            skills {
-              skill {
-                name
-              }
-              level
-              levelName
-            }
-          }
-        }
-      }
-    }
-  }
-}
-    `;
 export type Requester<C = {}, E = unknown> = <R, V>(doc: DocumentNode, vars?: V, options?: C) => Promise<R> | AsyncIterable<R>
 export function getSdk<C, E>(requester: Requester<C, E>) {
   return {
-    AllMembers(variables?: AllMembersQueryVariables, options?: C): Promise<AllMembersQuery> {
-      return requester<AllMembersQuery, AllMembersQueryVariables>(AllMembersDocument, variables, options) as Promise<AllMembersQuery>;
-    }
+
   };
 }
 export type Sdk = ReturnType<typeof getSdk>;
