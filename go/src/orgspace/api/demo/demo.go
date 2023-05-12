@@ -89,6 +89,24 @@ type AuthResponse struct {
 	RefreshToken string
 }
 
+func InitClient(clientId string, secret string) (error, *graphql.Client) {
+	err, token := GetAccessToken(clientId, secret)
+
+	if err != nil {
+		return err, nil
+	}
+
+	src := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: token},
+	)
+
+	httpClient := oauth2.NewClient(context.Background(), src)
+
+	client := graphql.NewClient("https://app.orgspace.io/api/gql", httpClient)
+
+	return nil, client
+}
+
 func GetAccessToken(clientId string, secret string) (error, string) {
 	postBody, _ := json.Marshal(map[string]string{
 		"clientId": clientId,
@@ -117,11 +135,7 @@ func GetAccessToken(clientId string, secret string) (error, string) {
 	return nil, authResponse.AccessToken
 }
 
-func CreateMember(input CreateMemberInput, src oauth2.TokenSource) (error, CreateMemberResponse) {
-	httpClient := oauth2.NewClient(context.Background(), src)
-
-	client := graphql.NewClient("https://app.orgspace.io/api/gql", httpClient)
-
+func CreateMember(input CreateMemberInput, client *graphql.Client) (error, CreateMemberResponse) {
 	var memberResponse CreateMemberResponse
 	var variables = map[string]interface{}{
 		"input": input,
@@ -132,6 +146,14 @@ func CreateMember(input CreateMemberInput, src oauth2.TokenSource) (error, Creat
 	return err, memberResponse
 }
 
+func GetAllMembers(client *graphql.Client) (error, AllMembers) {
+	var allMembers AllMembers
+
+	err := client.Query(context.Background(), &allMembers, nil)
+
+	return err, allMembers
+}
+
 func main() {
 	clientId := os.Getenv("ORGSPACE_CLIENT_ID")
 	secret := os.Getenv("ORGSPACE_SECRET")
@@ -140,27 +162,13 @@ func main() {
 		panic("Expecting both ORGSPACE_CLIENT_ID and ORGSPACE_SECRET to be set")
 	}
 
-	err, token := GetAccessToken(clientId, secret)
+	err, client := InitClient(clientId, secret)
 
 	if err != nil {
 		panic(err)
 	}
 
-	src := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: token},
-	)
-
-	httpClient := oauth2.NewClient(context.Background(), src)
-
-	client := graphql.NewClient("https://app.orgspace.io/api/gql", httpClient)
-
-	var allMembers AllMembers
-
-	err = client.Query(context.Background(), &allMembers, nil)
-
-	if err != nil {
-		panic(err)
-	}
+	err, allMembers := GetAllMembers(client)
 
 	fmt.Println(allMembers)
 }
